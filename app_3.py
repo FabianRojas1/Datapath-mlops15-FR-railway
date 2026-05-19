@@ -1,7 +1,6 @@
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
-from Houses import House
 from joblib import load
 
 import pandas as pd
