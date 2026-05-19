@@ -47,39 +47,33 @@ def health_check(db=Depends(get_db)):
 
 @app.post("/predict")
 async def predict_backnote(file : UploadFile = File(...)):
-    try:
-        classifier = load("linear_regression.joblib")
-        
-        features_df = pd.read_csv("selected_features.csv")
-        features = features_df["0"].tolist()
+    classifier = load("linear_regression.joblib")
+    
+    features_df = pd.read_csv("selected_features.csv")
+    features = features_df["0"].tolist()
 
-        content = await file.read()
-        df = pd.read_csv(StringIO(content.decode("utf-8")))
-        df = df[features]
+    content = await file.read()
+    df = pd.read_csv(StringIO(content.decode("utf-8")))
+    df = df[features]
 
-        predictions = classifier.predict(df)
+    predictions = classifier.predict(df)
 
-        bog_tz = pytz.timezone("America/Bogota")
-        now = datetime.now(bog_tz)
+    bog_tz = pytz.timezone("America/Bogota")
+    now = datetime.now(bog_tz)
 
-        predictions_df = pd.DataFrame({
-            'file_name': file.filename,
-            'predictions': predictions,
-            'created_at': now
-        })
+    predictions_df = pd.DataFrame({
+        'file_name': file.filename,
+        'predictions': predictions,
+        'created_at': now
+    })
 
-        predictions_df.to_sql(
-            "predictions",
-            con=engine,
-            if_exists="append",
-            index=False 
-        )
+    predictions_df.to_sql(
+        "predictions",
+        con=engine,
+        if_exists="append",
+        index=False 
+    )
 
-        
-
-        return {
-            "predictions": predictions.tolist()
-        }
-
- #    except Exception as e:
-#        raise HTTPException(status_code=400, detail=str(e))
+    return {
+        "predictions": predictions.tolist()
+    }
