@@ -6,7 +6,7 @@ from joblib import load
 import pandas as pd
 from io import StringIO
 
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine, MetaData, text
 from sqlalchemy.orm import sessionmaker
 
 from datetime import datetime 
@@ -17,7 +17,11 @@ import os
 #SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:GRplpdmGkIRHEYvzqDFKzdnNXepPqdEz@centerbeam.proxy.rlwy.net:11297/railway"
 SQLALCHEMY_DATABASE_URL = os.environ["SQLALCHEMY_DATABASE_URL"]
 
+#SQLALCHEMY_DATABASE_URL1 = "mysql+pymysql://root:KSvwNhzjIaKIozHAwswNeHaqEWpbRGrL@ballast.proxy.rlwy.net:37847/railway"
+SQLALCHEMY_DATABASE_URL1 = os.environ["SQLALCHEMY_DATABASE_URL1"]
+
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine1 = create_engine(SQLALCHEMY_DATABASE_URL1)
 
 metadata = MetaData()
 
@@ -44,8 +48,30 @@ def read_root():
 def health_check(db=Depends(get_db)):
     return {"status": "ok"}
 
-
-
+@app.get("/db-check")
+def verify_db_connections():
+    try:
+        # Validamos la primera base de datos usando su motor directamente
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+            
+        # Validamos la segunda base de datos usando su motor directamente
+        with engine1.connect() as connection1:
+            connection1.execute(text("SELECT 1"))
+        
+        return {
+            "status": "success",
+            "message": "Connected to both databases successfully."
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "status": "error",
+                "message": f"Failed to connect to databases. Error: {str(e)}"
+            }
+        )
+    
 @app.post("/predict")
 async def predict_backnote(file : UploadFile = File(...)):
     classifier = load("linear_regression.joblib")
@@ -66,7 +92,15 @@ async def predict_backnote(file : UploadFile = File(...)):
         'file_name': file.filename,
         'predictions': predictions,
         'created_at': now
-    })
+    }
+    )
+
+    df.to_sql(
+        "inputs",
+        con=engine1,
+        if_exists="append",
+        index=False 
+    )
 
     predictions_df.to_sql(
         "predictions",
@@ -75,6 +109,8 @@ async def predict_backnote(file : UploadFile = File(...)):
         index=False 
     )
 
+
     return {
+        "inputs": df.to_dict(orient="records"),
         "predictions": predictions.tolist()
     }

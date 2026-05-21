@@ -5,6 +5,49 @@ CREATE TABLE predictions (
     created_at TIMESTAMP 
 );
 
+
+CREATE TABLE inputs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    file_name VARCHAR(255) NOT NULL,
+    MSSubClass FLOAT NOT NULL,
+    MSZoning FLOAT NOT NULL,
+    LotArea FLOAT NOT NULL,
+    LotShape FLOAT NOT NULL,
+    LandContour FLOAT NOT NULL,
+    LotConfig FLOAT NOT NULL,
+    Neighborhood FLOAT NOT NULL,
+    OverallQual FLOAT NOT NULL,
+    OverallCond FLOAT NOT NULL,
+    YearRemodAdd FLOAT NOT NULL,
+    RoofStyle FLOAT NOT NULL,
+    Exterior1st FLOAT NOT NULL,
+    ExterQual FLOAT NOT NULL,
+    Foundation FLOAT NOT NULL,
+    BsmtQual FLOAT NOT NULL,
+    BsmtExposure FLOAT NOT NULL,
+    BsmtFinType1 FLOAT NOT NULL,
+    HeatingQC FLOAT NOT NULL,
+    CentralAir FLOAT NOT NULL,
+    stFlrSF FLOAT NOT NULL,
+    ndFlrSF FLOAT NOT NULL,
+    GrLivArea FLOAT NOT NULL,
+    BsmtFullBath FLOAT NOT NULL,
+    FullBath FLOAT NOT NULL,
+    HalfBath FLOAT NOT NULL,
+    KitchenQual FLOAT NOT NULL,
+    TotRmsAbvGrd FLOAT NOT NULL,
+    Functional FLOAT NOT NULL,
+    Fireplaces FLOAT NOT NULL,
+    FireplaceQu FLOAT NOT NULL,
+    GarageFinish FLOAT NOT NULL,
+    GarageCars FLOAT NOT NULL,
+    PavedDrive FLOAT NOT NULL,
+    WoodDeckSF FLOAT NOT NULL,
+    ScreenPorch FLOAT NOT NULL,
+    SaleCondition FLOAT NOT NULL,    
+    created_at TIMESTAMP 
+);
+
 ####     ITEMS      ####
 
 CREATE TABLE items (
